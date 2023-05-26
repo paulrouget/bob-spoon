@@ -21,7 +21,11 @@ function dock()
       end
     end
   end
-  return ret
+  if ret then
+    return ret
+  else
+    return ""
+  end
 end
 
 function battery()
@@ -37,8 +41,10 @@ local w = 400
 local h = 12 
 local x = 10
 local y = 10
-local ctx = canvas.new{x = mode.w - w - x, y = mode.h - h - y - h / 2, w = w, h = h + h}
-ctx:appendElements({
+
+gCtx = canvas.new{x = mode.w - w - x, y = mode.h - h - y - h / 2, w = w, h = h + h}
+
+gCtx:appendElements({
   action = "fill",
   fillColor = { red = 1.0, blue = 1.0, green = 1.0 },
   textAlignment = "right",
@@ -50,11 +56,12 @@ ctx:appendElements({
 
 
 function tick()
-  local text = dock() .. "   " .. battery() .. " " .. date()
-  ctx:elementAttribute(1, "text", text)
+  local text = dock() .. " " .. battery() .. " " .. date()
+  gCtx:elementAttribute(1, "text", text)
 end
 
-local timer = hs.timer.doEvery(10, tick)
+gTimer = hs.timer.doEvery(10, tick)
+
 tick()
 
 -- File reload ----------------------------------------
@@ -70,5 +77,4 @@ function reloadConfig(files)
     hs.reload()
   end
 end
-myWatcher = hs.pathwatcher.new(os.getenv("HOME") .. "/git/bob/", reloadConfig):start()
-
+gWatcher = hs.pathwatcher.new(os.getenv("HOME") .. "/git/bob/", reloadConfig):start()
